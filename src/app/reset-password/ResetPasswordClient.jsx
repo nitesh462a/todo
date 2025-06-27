@@ -1,36 +1,39 @@
 'use client';
+
 import { useState } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 
 export default function ResetPasswordClient() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
-  const Router=useRouter();
+  const router = useRouter();
 
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
-  const [error, setError] = useState('')
+  const [error, setError] = useState('');
 
-const validatePassword = (password) => {
+  const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
     return regex.test(password);
-  }
+  };
 
   const handleReset = async () => {
-    setError('')
+    setError('');
     if (!validatePassword(password)) {
-      setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+      setError(
+        'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.'
+      );
       return;
     }
+
     try {
       const res = await axios.post('/api/reset-password', {
         token,
-        password
+        password,
       });
-      Router.push("/login");
+      router.push('/login');
       setMessage(res.data.message);
     } catch (err) {
       setMessage('❌ Error resetting password.');
@@ -39,7 +42,6 @@ const validatePassword = (password) => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      
       <div className="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full">
         {error && <p className="text-red-500 mb-4">{error}</p>}
         <h2 className="text-2xl font-bold mb-4 text-center">🔑 Reset Password</h2>
@@ -57,7 +59,7 @@ const validatePassword = (password) => {
           Reset Password
         </button>
 
-        <Link href={"/login"}>go to login</Link>
+        <Link href="/login">Go to login</Link>
 
         {message && (
           <div className="mt-4 text-center text-sm text-green-600 font-medium">
