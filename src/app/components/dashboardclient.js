@@ -84,8 +84,8 @@ setRem(res.data.filter(t=>(t.completed ===false)))
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6 space-y-6">
-      <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-xl">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center bg-center bg-cover p-6 space-y-6" style={{backgroundImage:"url('/bg.jpeg')"}}>
+      <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-xl bg-center bg-cover" style={{backgroundImage:"url('/bg.jpeg')"}}>
         <h2 className="text-3xl font-bold text-blue-700 text-center mb-4">📝 To-Do Dashboard</h2>
 
         <div className="flex gap-2 mb-4">
@@ -93,7 +93,7 @@ setRem(res.data.filter(t=>(t.completed ===false)))
             value={text}
             onChange={e => setText(e.target.value)}
             placeholder="New task..."
-            className="flex-1 px-4 py-2 border w-1 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 px-4 py-2 border bg-green-300 w-1 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
           <button
             onClick={addTodo}
@@ -132,21 +132,14 @@ setRem(res.data.filter(t=>(t.completed ===false)))
          ( <p className="text-center text-gray-500 mt-4">No tasks added yet.</p>)
       :
 
-       ( <div className='flex justify-between mt-2.5 text-blue-600'>
+       ( <div className='flex justify-between mt-2.5 font-bold text-blue-800'>
           <p>{rem.length} Task remaining</p>
-          <h3 onClick={clearAll}>delete All</h3>
+          <h3 className='bg-red-600 rounded-4xl p-2 text-black' onClick={clearAll}>delete All</h3>
         </div>)}
       </div>
 
      
-      <div className="bg-white p-4 rounded shadow max-w-xl w-full">
-      
-      
-
- 
-
-
-      </div>
+     
 
       <LogoutButton />
     </div>
