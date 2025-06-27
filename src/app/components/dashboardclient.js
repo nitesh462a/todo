@@ -5,7 +5,7 @@ import axios from 'axios';
 import LogoutButton from '../logout/page';
 import toast from 'react-hot-toast';
 
-export default function DashboardClient({ token, userData }) {
+export default function DashboardClient() {
   const [todos, setTodos] = useState([]);
   const [text, setText] = useState("");
 const [rem, setRem] = useState([]);
@@ -143,9 +143,7 @@ setRem(res.data.filter(t=>(t.completed ===false)))
       
       
 
-  <pre className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
-  {userData ? JSON.stringify(userData, null, 2) : 'User data not available.'}
-</pre>
+ 
 
 
       </div>
