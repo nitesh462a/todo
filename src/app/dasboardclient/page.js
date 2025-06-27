@@ -143,12 +143,16 @@ setRem(res.data.filter(t=>(t.completed ===false)))
       
       
 
-        <p className="mt-4"><strong>User Info :</strong></p>
-        <pre className="bg-gray-100 p-2 rounded text-sm text-gray-800">
-         <p> {userData.name}</p>
-         <br />
-           {userData.email}
-        </pre>
+       {userData ? (
+  <>
+    <p>{userData.name}</p>
+    <br />
+    <p>{userData.email}</p>
+  </>
+) : (
+  <p className="text-gray-400">User info not available</p>
+)}
+
       </div>
 
       <LogoutButton />
