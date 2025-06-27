@@ -143,15 +143,10 @@ setRem(res.data.filter(t=>(t.completed ===false)))
       
       
 
-       {userData ? (
-  <>
-    <p>{userData.name}</p>
-    <br />
-    <p>{userData.email}</p>
-  </>
-) : (
-  <p className="text-gray-400">User info not available</p>
-)}
+  <pre className="text-sm text-gray-700 bg-gray-50 p-2 rounded">
+  {userData ? JSON.stringify(userData, null, 2) : 'User data not available.'}
+</pre>
+
 
       </div>
 

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import DashboardClient from "../dasboardclient/page";
 
 export default async function DashboardPage() {
-  const cookieStore = await cookies(); // ✅ Await cookies
+  const cookieStore = await cookies(); 
   const token = cookieStore.get("token")?.value;
   if (!token) redirect("/login");
 
