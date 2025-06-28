@@ -8,8 +8,14 @@ export default function Regi() {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmpass, setConfirmpass] = useState('')
   const [error, setError] = useState('')
   const router = useRouter();
+
+
+  const checkpass=(password,confirmpass)=>{
+     return password ===confirmpass;
+  }
 
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
@@ -19,10 +25,16 @@ export default function Regi() {
   const handlesubmit = async (e) => {
     e.preventDefault();
 
+    if(!checkpass(password ,confirmpass)){
+       setError("Passwords must be match");
+      return;
+    }
+
     if (!validatePassword(password)) {
       setError("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
       return;
     }
+
 
      const isconfirm =window.confirm("check your datails");
     if(isconfirm){
@@ -57,6 +69,11 @@ export default function Regi() {
         <div className="mb-4">
           <label className="block text-gray-700">Password 🔐</label>
           <input className="w-full px-3 py-2 border rounded-full" type="password" placeholder="Enter password" onChange={(e) => setPassword(e.target.value)} required />
+        </div>
+
+         <div className="mb-4">
+          <label className="block text-gray-700"> Confirm Password 🔐</label>
+          <input className="w-full px-3 py-2 border rounded-full" type="password" placeholder="Enter confirm password" onChange={(e) => setConfirmpass(e.target.value)} required />
         </div>
 
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-green-600 transition">Register</button>

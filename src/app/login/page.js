@@ -67,8 +67,8 @@ export default function LoginPage() {
         <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-full hover:bg-green-600 transition">
           login
         </button>
-        <div className="flex mt-6 justify-center ">
-          <p className="text-blue-900 font-bold">you have no account ?  </p>
+        <div className="flex mt-6 justify-center">
+          <p className="text-blue-900 mx-2"> if you have no account ?  </p>
            <h3 onClick={()=>{router.push("/register")}} className="text-blue-900 font-semibold hover:cursor-pointer"> register</h3>
         </div>
         
