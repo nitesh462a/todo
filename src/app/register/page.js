@@ -52,7 +52,7 @@ export default function Regi() {
   return (
     <div className="flex justify-center items-center h-screen bg-center bg-cover"  style={{backgroundImage:"url('/bg.jpeg')"}}>
       <form onSubmit={handlesubmit} className="bg-white p-8 rounded-3xl shadow-md w-96 bg-center bg-cover"  style={{backgroundImage:"url('/bg.jpeg')"}}>
-        <h1 className="text-2xl font-bold text-green-600 mb-6 flex justify-center">Register Here</h1>
+        <h1 className="text-2xl font-bold text-green-600 mb-6 flex justify-center">Creat an account</h1>
 
         {error && <p className="text-red-500 mb-4">{error}</p>}
 
