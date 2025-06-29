@@ -1,13 +1,7 @@
-import ResetPasswordClient from "../resetclient/page";
+import ResetPasswordClient from "../pageclient";
 
+export default function ResetPasswordPage({ searchParams }) {
+  const token = searchParams.token;
 
-import { Suspense } from 'react';
-
-
-export default function ResetPasswordPage() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <ResetPasswordClient />
-    </Suspense>
-  );
+  return <ResetPasswordClient token={token} />;
 }

@@ -1,13 +1,9 @@
 'use client';
 import { useState } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function ResetPasswordClient() {
-  
-  const token = useSearchParams().get('token');
-
+export default function ResetPasswordClient({ token }) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
@@ -41,7 +37,9 @@ export default function ResetPasswordClient() {
           Reset Password
         </button>
 
-        <Link href={"/login"}>go to the login</Link>
+        <Link href="/login" className="block mt-4 text-center text-blue-600">
+          Go to Login
+        </Link>
 
         {message && (
           <div className="mt-4 text-center text-sm text-green-600 font-medium">
