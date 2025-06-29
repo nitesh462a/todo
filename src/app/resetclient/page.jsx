@@ -41,7 +41,7 @@ export default function ResetPasswordClient() {
           Reset Password
         </button>
 
-        <Link href={"/login"}>go to login</Link>
+        <Link href={"/login"}>go to the login</Link>
 
         {message && (
           <div className="mt-4 text-center text-sm text-green-600 font-medium">
