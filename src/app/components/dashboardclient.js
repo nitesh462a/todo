@@ -1,147 +1,582 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
-import LogoutButton from '../logout/page';
-import toast from 'react-hot-toast';
+import { useState, useEffect } from "react";
 
-export default function DashboardClient() {
-  const [todos, setTodos] = useState([]);
-  const [text, setText] = useState("");
-const [rem, setRem] = useState([]);
-  const clearAll = async ()=>{
-    const isconfirm =window.confirm("do yo want to delete all");
-    if(isconfirm){
-      try {
-       
-      await axios.delete("/api/todos/deleteall");
-      fetchTodos();
-      toast.success("delete all successfully");
+export default function CricketScorer() {
 
-    } catch (err) {
-      console.error("❌ Error deletingall todo:", err);
-    }
+  const [team, setTeam] = useState("A");
 
-    }
-  }
+  const [teamA, setTeamA] = useState({
+    overs: [[]],
+    runs: 0,
+    wickets: 0
+  });
 
- 
-  const fetchTodos = async () => {
-    try {
-      const res = await axios.get("/api/todos");
-setRem(res.data.filter(t=>(t.completed ===false)))
-      setTodos(res.data);
-      
-      console.log(todos)
-    } catch (err) {
-      console.error("❌ Error fetching todos:", err);
-    }
-  };
+  const [teamB, setTeamB] = useState({
+    overs: [[]],
+    runs: 0,
+    wickets: 0
+  });
+
+  const currentTeam = team === "A" ? teamA : teamB;
+
+  const overs = currentTeam.overs;
+  const runs = currentTeam.runs;
+  const wickets = currentTeam.wickets;
+  const target = teamA.runs + 1;
+
+  const [open, setOpen] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [editOver, setEditOver] = useState(null);
+const [showWinner, setShowWinner] = useState(true); 
+  const [winner, setWinner] = useState(null);
+
+  const [maxWickets, setMaxWickets] = useState(7);
+  const [maxOvers, setMaxOvers] = useState(7);
+
+  const [allOut, setAllOut] = useState(false);
+  const [oversFinished, setOversFinished] = useState(false);
+
+
+  /* LOAD DATA AFTER REFRESH */
 
   useEffect(() => {
-    fetchTodos();
-    
-    
+
+    const savedA = localStorage.getItem("teamA");
+    const savedB = localStorage.getItem("teamB");
+    const savedTeam = localStorage.getItem("team");
+    const savedMaxWickets = localStorage.getItem("maxWickets");
+    const savedMaxOvers = localStorage.getItem("maxOvers");
+
+    if (savedA) setTeamA(JSON.parse(savedA));
+    if (savedB) setTeamB(JSON.parse(savedB));
+    if (savedTeam) setTeam(savedTeam);
+
+    if (savedMaxWickets) setMaxWickets(Number(savedMaxWickets));
+    if (savedMaxOvers) setMaxOvers(Number(savedMaxOvers));
+
   }, []);
 
-  const addTodo = async () => {
-    if (!text.trim()) return;
+  // winner
+  useEffect(() => {
 
-    try {
-      await axios.post("/api/todos", { text });
-      setText("");
-      fetchTodos();
-    } catch (err) {
-      console.error("❌ Error adding todo:", err);
+    if (team !== "B") return; 
+
+    // Team B wins early (target chase)
+    if (teamB.runs > teamA.runs) {
+      setWinner("Team B Won");
+      return;
     }
-  };
 
-  const toggle = async (todo) => {
-    try {
-      await axios.put("/api/todos", {
-        _id: todo._id,
-        completed: !todo.completed
-      });
-      fetchTodos();
-    } catch (err) {
-      console.error("❌ Error toggling todo:", err);
+    // Team B innings finished
+    if (oversFinished || allOut) {
+
+      if (teamB.runs < teamA.runs) {
+        setWinner("Team A Won");
+      }
+      else if (teamB.runs === teamA.runs) {
+        setWinner("Match Draw");
+      }
+
     }
-  };
+
+  }, [teamB.runs, oversFinished, allOut, team]);
+
+  /* SAVE DATA */
+
+  useEffect(() => {
+
+    localStorage.setItem("teamA", JSON.stringify(teamA));
+    localStorage.setItem("teamB", JSON.stringify(teamB));
+    localStorage.setItem("team", team);
+
+    localStorage.setItem("maxWickets", maxWickets);
+    localStorage.setItem("maxOvers", maxOvers);
+
+  }, [teamA, teamB, team, maxWickets, maxOvers]);
 
 
-  const del = async (_id) => {
-    const isconfirm =window.confirm("do yo want to delete this");
-    if(isconfirm){
-      try {
-      await axios.delete("/api/todos", {
-        data: { _id },
+  function toggleTeam() {
+
+    if (team === "A") {
+
+      if (oversFinished || allOut) {
+
+        setTeam("B");
+
+        // reset for Team B inning
+        setAllOut(false);
+        setOversFinished(false);
+        setWinner(null);
+
+      } else {
+        alert("Team A ka over ya wicket khatam hone do!");
+      }
+
+    } else {
+
+      setTeam("A");
+
+    }
+
+  }
+
+
+  function updateTeam(newOvers, newRuns, newWickets) {
+
+    if (team === "A") {
+
+      setTeamA({
+        overs: newOvers,
+        runs: newRuns,
+        wickets: newWickets
       });
-      fetchTodos();
-       toast.success("delete successfully");
-    } catch (err) {
-      console.error("❌ Error deleting todo:", err);
-    }}
-  };
+
+    } else {
+
+      setTeamB({
+        overs: newOvers,
+        runs: newRuns,
+        wickets: newWickets
+      });
+
+    }
+
+  }
+
+
+  function addBall(result) {
+    if (winner) return;
+    if (allOut || oversFinished) return;
+
+    let newOvers = JSON.parse(JSON.stringify(overs));
+    let newRuns = runs;
+    let newWickets = wickets;
+
+    if (editOver !== null) {
+
+      let oldValue = newOvers[editOver][editIndex];
+
+      if (oldValue === "W") newWickets--;
+      else if (oldValue === "Wd" || oldValue === "Nb") newRuns--;
+      else newRuns -= Number(oldValue);
+
+      if (result === "W") newWickets++;
+      else if (result === "Wd" || result === "Nb") newRuns++;
+      else if (result === "ro0") newWickets++;
+      else if (result === "ro1") {
+        newRuns += 1;
+        newWickets++;
+      }
+      else if (result === "ro2") {
+        newRuns += 2;
+        newWickets++;
+      }
+      else newRuns += Number(result);
+
+      newOvers[editOver][editIndex] = result;
+
+      setEditOver(null);
+      setEditIndex(null);
+
+    }
+
+    else {
+
+      let currentOver = [...newOvers[newOvers.length - 1]];
+
+      currentOver.push(result);
+
+      newOvers[newOvers.length - 1] = currentOver;
+
+      if (result === "W") newWickets++;
+      else if (result === "Wd" || result === "Nb") newRuns++;
+      else if (result === "ro0") newWickets++;
+      else if (result === "ro1") {
+        newRuns += 1;
+        newWickets++;
+      }
+      else if (result === "ro2") {
+        newRuns += 2;
+        newWickets++;
+      }
+      else newRuns += Number(result);
+
+      let legalBalls = currentOver.filter(
+        b => b !== "Wd" && b !== "Nb"
+      ).length;
+
+      if (legalBalls === 6) {
+        newOvers.push([]);
+      }
+
+    }
+
+    updateTeam(newOvers, newRuns, newWickets);
+
+    setOpen(false);
+
+  }
+
+
+  const legalBalls = overs.flat().filter(
+    b => b !== "Wd" && b !== "Nb"
+  ).length;
+
+  const over = Math.floor(legalBalls / 6);
+  const ball = legalBalls % 6;
+
+
+  useEffect(() => {
+
+    if (wickets >= maxWickets) {
+
+      setAllOut(true);
+      alert("All Out!");
+
+    } else {
+
+      setAllOut(false);
+
+    }
+
+  }, [wickets]);
+
+
+  useEffect(() => {
+
+    if (over >= maxOvers) {
+
+      setOversFinished(true);
+      alert("Overs Finished!");
+
+    } else {
+
+      setOversFinished(false);
+
+    }
+
+  }, [over]);
+
+
+  function editBall(overIndex, ballIndex) {
+
+    let lastOver = overs.length - 1;
+    let lastBall = overs[lastOver].length - 1;
+
+    if (overIndex === lastOver && ballIndex === lastBall) {
+
+      setEditOver(overIndex);
+      setEditIndex(ballIndex);
+      setOpen(true);
+
+    }
+
+  }
+
+
+  function resetMatch() {
+
+    if (confirm("Reset Match?")) {
+
+      setTeamA({
+        overs: [[]],
+        runs: 0,
+        wickets: 0
+      });
+
+      setTeamB({
+        overs: [[]],
+        runs: 0,
+        wickets: 0
+      });
+
+      setTeam("A");
+
+      setAllOut(false);
+      setOversFinished(false);
+      setWinner(null);
+      setMaxWickets(7);
+      setMaxOvers(7);
+      setShowWinner(true);
+
+      localStorage.removeItem("teamA");
+      localStorage.removeItem("teamB");
+      localStorage.removeItem("team");
+      localStorage.removeItem("maxWickets");
+      localStorage.removeItem("maxOvers");
+
+    }
+
+  }
+
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center bg-center bg-cover p-6 space-y-6" style={{backgroundImage:"url('/bg.jpeg')"}}>
-      <div className="bg-white shadow-md rounded-lg p-4 w-full max-w-xl bg-center bg-cover" style={{backgroundImage:"url('/bg.jpeg')"}}>
-        <h2 className="text-3xl font-bold text-blue-700 text-center mb-4">📝 To-Do Dashboard</h2>
 
-        <div className="flex gap-2 mb-4">
-          <input
-            value={text}
-            onChange={e => setText(e.target.value)}
-            placeholder="New task..."
-            className="flex-1 px-4 py-2 border bg-green-300 w-1 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+    <div style={{
+      background: "#0f172a",
+      minHeight: "100vh",
+      padding: "40px",
+      color: "white",
+      textAlign: "center"
+    }}>
+
+
+      <button
+        onClick={toggleTeam}
+        style={{
+          padding: "12px 20px",
+          background: "#10b981",
+          border: "none",
+          borderRadius: "8px",
+          color: "white",
+          margin: "20px"
+        }}
+      >
+        Team {team}
+      </button>
+
+        <div style={{
+        display: "flex",
+        justifyContent: "space-between",
+       
+      }}>
+
+        <div >
+          Max Wickets :  
+         <input style={{ width: "2rem" ,margin:"1rem"}} 
+            type="number"
+            value={maxWickets}
+            onChange={(e) => setMaxWickets(Number(e.target.value))}
           />
-          <button
-            onClick={addTodo}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            Add
-          </button>
         </div>
 
-        <ul className="space-y-3">
-          {todos.map(t => (
-            <li key={t._id} className="flex items-center justify-between bg-gray-50 p-3 rounded-lg shadow-sm">
-              <div className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={t.completed}
-                  onChange={() => toggle(t)}
-                  className="h-5 w-5 accent-blue-600"
-                />
-                <span className={`text-lg ${t.completed ? "line-through text-gray-400" : ""}`}>
-                  {t.text}
-                </span>
-              </div>
-              <button
-                onClick={() => del(t._id)}
-                className="text-red-500 hover:text-red-700 text-xl"
-                title="Delete"
-              >
-                🗑️
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div>
+          Max Overs : 
+      <input style={{ width: "2rem" ,margin:"1rem"}} 
+            type="number"
+            value={maxOvers}
+            onChange={(e) => setMaxOvers(Number(e.target.value))}
+          />
+        </div>
 
-        {todos.length === 0 ? 
-         ( <p className="text-center text-gray-500 mt-4">No tasks added yet.</p>)
-      :
+      </div>
 
-       ( <div className='flex justify-between mt-2.5 font-bold text-blue-800'>
-          <p>{rem.length} Task remaining</p>
-          <h3 className='bg-red-600 rounded-4xl p-2 text-black' onClick={clearAll}>delete All</h3>
-        </div>)}
+
+<h1>🏏 Cricket Scorer</h1>
+
+{winner && (
+        <h2 style={{ color: "yellow" }}>
+          🏆 {winner}
+        </h2>
+      )}
+
+
+
+      {winner && showWinner &&(
+  <div style={{
+    position: "fixed",
+    top: 0, left: 0, right: 0, bottom: 0,
+    background: "rgba(0,0,0,0.7)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 9999
+  }}>
+    <div style={{
+      background: "#1e40af",
+      padding: "40px 60px",
+      borderRadius: "15px",
+      color: "yellow",
+      fontSize: "2rem",
+      fontWeight: "bold",
+      textAlign: "center",
+      boxShadow: "0 0 20px yellow",
+      position: "relative"
+    }}>
+      🏆 {winner}
+
+      <button
+        onClick={() => setShowWinner(false)} 
+        style={{
+          position: "absolute",
+          top: "10px",
+          right: "10px",
+          background: "yellow",
+          color: "#1e40af",
+          border: "none",
+          borderRadius: "6px",
+          padding: "5px 10px",
+          cursor: "pointer",
+          fontWeight: "bold"
+        }}
+      >
+        X
+      </button>
+    </div>
+  </div>
+)}
+
+ 
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        gap: "20px"
+      }} >
+         <h2>Score: {runs}/{wickets}</h2>
+       
+        {team === "B" && (
+          <h3>Target: {teamA.runs + 1}</h3>
+        )}
       </div>
 
      
-     
 
-      <LogoutButton />
+      <h3>Overs: {over}.{ball}</h3>
+
+
+    
+
+      {[...overs].reverse().map((ov, i) => {
+
+        const realOverIndex = overs.length - 1 - i;
+
+        return (
+
+          <div key={i}>
+
+            <h3>Over {realOverIndex + 1}</h3>
+
+            <div style={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "center",
+              flexWrap: "wrap"
+            }}>
+
+              {ov.map((b, index) => (
+
+                <div
+                  key={index}
+                  onClick={() => editBall(realOverIndex, index)}
+                  style={{
+                    width: "45px",
+                    height: "45px",
+                    background: "#22c55e",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                  }}
+                >
+                  {b}
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        )
+
+      })}
+
+
+      {wickets < maxWickets && !oversFinished && (
+
+        <button
+          onClick={() => setOpen(true)}
+          style={{
+            padding: "12px 20px",
+            background: "#3b82f6",
+            border: "none",
+            borderRadius: "8px",
+            color: "white",
+            position: "fixed",
+            top: "10px",
+            right: "10px"
+          }}
+        >
+          Add Ball
+        </button>
+
+      )}
+
+
+      <button
+        onClick={resetMatch}
+        style={{
+          padding: "12px 20px",
+          background: "#ef4444",
+          border: "none",
+          borderRadius: "8px",
+          color: "white",
+          position: "fixed",
+          top: "10px",
+          left: "10px"
+        }}
+      >
+        Reset Match
+      </button>
+
+
+      {open && (
+
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0,0,0,0.6)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}>
+
+          <div style={{
+            background: "white",
+            padding: "25px",
+            borderRadius: "10px",
+            color: "black"
+          }}>
+
+            <h3>Select Ball Result</h3>
+
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4,60px)",
+              gap: "10px"
+            }}>
+
+              <button onClick={() => addBall(0)}>0</button>
+              <button onClick={() => addBall(1)}>1</button>
+              <button onClick={() => addBall(2)}>2</button>
+              <button onClick={() => addBall(4)}>4</button>
+              <button onClick={() => addBall(6)}>6</button>
+              <button onClick={() => addBall("W")}>W</button>
+              <button onClick={() => addBall("Wd")}>Wd</button>
+              <button onClick={() => addBall("Nb")}>Nb</button>
+              <button onClick={() => addBall("ro0")}>ro0</button>
+              <button onClick={() => addBall("ro1")}>ro1</button>
+              <button onClick={() => addBall("ro2")}>ro2</button>
+
+            </div>
+
+            <br />
+
+            <button onClick={() => setOpen(false)}>Close</button>
+
+          </div>
+
+        </div>
+
+      )}
+
     </div>
+
   );
+
 }

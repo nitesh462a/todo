@@ -70,7 +70,9 @@ export default function LoginPage() {
         <div className="flex mt-6 justify-center">
           <p className="text-blue-900 mx-2"> if you have no account ?  </p>
            <h3 onClick={()=>{router.push("/register")}} className="text-blue-900 font-semibold hover:cursor-pointer"> register</h3>
+            
         </div>
+          <h3 className="mt-4 text-blue-900 cursor-pointer" onClick={() => { router.push("/cricket") }}>guest user</h3>
         
       </form>
     </div>
