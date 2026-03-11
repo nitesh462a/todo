@@ -25,7 +25,7 @@ export default function CricketScorer() {
   const overs = currentTeam.overs;
   const runs = currentTeam.runs;
   const wickets = currentTeam.wickets;
- const target = team === "B" ? teamA.runs + 1 : null;
+  const target = team === "B" ? teamA.runs + 1 : null;
 
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -74,28 +74,28 @@ export default function CricketScorer() {
   }, []);
 
   // winner
-useEffect(() => {
-  if (winner) return;
+  useEffect(() => {
+    if (winner) return;
 
-  if (team !== "B") return;
+    if (team !== "B") return;
 
-  if (teamB.runs >= target) {
-    setWinner("Team B Won");
-    return;
-  }
-
-  if (oversFinished || allOut) {
-
-    if (teamB.runs < teamA.runs) {
-      setWinner("Team A Won");
-    }
-    else if (teamB.runs === teamA.runs) {
-      setWinner("Match Draw");
+    if (teamB.runs >= target) {
+      setWinner("Team B Won");
+      return;
     }
 
-  }
+    if (oversFinished || allOut) {
 
-}, [teamB.runs, oversFinished, allOut, team,target]);
+      if (teamB.runs < teamA.runs) {
+        setWinner("Team A Won");
+      }
+      else if (teamB.runs === teamA.runs) {
+        setWinner("Match Draw");
+      }
+
+    }
+
+  }, [teamB.runs, oversFinished, allOut, team, target]);
 
   /* SAVE DATA */
 
@@ -164,31 +164,31 @@ useEffect(() => {
   }
 
 
-function updateTeam(newOvers, newRuns, newWickets) {
+  function updateTeam(newOvers, newRuns, newWickets) {
 
-  if (team === "A") {
+    if (team === "A") {
 
-    setTeamA({
-      ...teamA,
-      overs: newOvers,
-      bowlers: teamA.bowlers,
-      runs: newRuns,
-      wickets: newWickets
-    });
+      setTeamA({
+        ...teamA,
+        overs: newOvers,
+        bowlers: teamA.bowlers,
+        runs: newRuns,
+        wickets: newWickets
+      });
 
-  } else {
+    } else {
 
-    setTeamB({
-      ...teamB,
-      overs: newOvers,
-      bowlers: teamB.bowlers,
-      runs: newRuns,
-      wickets: newWickets
-    });
+      setTeamB({
+        ...teamB,
+        overs: newOvers,
+        bowlers: teamB.bowlers,
+        runs: newRuns,
+        wickets: newWickets
+      });
+
+    }
 
   }
-
-}
 
   function undoLastBall() {
 
@@ -209,30 +209,30 @@ function updateTeam(newOvers, newRuns, newWickets) {
     if (lastOver < 0) return;
 
     if (newOvers[lastOver].length === 0) return;
-let lastBall = newOvers[lastOver].pop();
+    let lastBall = newOvers[lastOver].pop();
 
     if (lastBall === "W") newWickets--;
-else if (lastBall === "Wd" || lastBall === "Nb") newRuns--;
-else if (lastBall === "Nb1") newRuns -= 2;
-else if (lastBall === "Nb2") newRuns -= 3;
-else if (lastBall === "Nb3") newRuns -= 4;
-else if (lastBall === "Nb4") newRuns -= 5;
-else if (lastBall === "Nb6") newRuns -= 7;
-else if (lastBall === "ro0") newWickets--;
-else if (lastBall === "ro1") {
-  newRuns--;
-  newWickets--;
-}
-else if (lastBall === "ro2") {
-  newRuns -= 2;
-  newWickets--;
-}
-else newRuns -= Number(lastBall);
+    else if (lastBall === "Wd" || lastBall === "Nb") newRuns--;
+    else if (lastBall === "Nb1") newRuns -= 2;
+    else if (lastBall === "Nb2") newRuns -= 3;
+    else if (lastBall === "Nb3") newRuns -= 4;
+    else if (lastBall === "Nb4") newRuns -= 5;
+    else if (lastBall === "Nb6") newRuns -= 7;
+    else if (lastBall === "ro0") newWickets--;
+    else if (lastBall === "ro1") {
+      newRuns--;
+      newWickets--;
+    }
+    else if (lastBall === "ro2") {
+      newRuns -= 2;
+      newWickets--;
+    }
+    else newRuns -= Number(lastBall);
 
     updateTeam(newOvers, newRuns, newWickets);
     setAllOut(false);
-setOversFinished(false);
-setWinner(null);
+    setOversFinished(false);
+    setWinner(null);
 
   }
 
@@ -265,38 +265,38 @@ setWinner(null);
         newRuns -= 2;
       }
       else if (oldValue === "Nb1") newRuns -= 2;
-else if (oldValue === "Nb2") newRuns -= 3;
-else if (oldValue === "Nb3") newRuns -= 4;
-else if (oldValue === "Nb4") newRuns -= 5;
-else if (oldValue === "Nb6") newRuns -= 7;
+      else if (oldValue === "Nb2") newRuns -= 3;
+      else if (oldValue === "Nb3") newRuns -= 4;
+      else if (oldValue === "Nb4") newRuns -= 5;
+      else if (oldValue === "Nb6") newRuns -= 7;
 
 
 
       else newRuns -= Number(oldValue);
 
-     if (result === "W") newWickets++;
+      if (result === "W") newWickets++;
 
-else if (result === "Wd" || result === "Nb") newRuns++;
+      else if (result === "Wd" || result === "Nb") newRuns++;
 
-else if (result === "Nb1") newRuns += 2;
-else if (result === "Nb2") newRuns += 3;
-else if (result === "Nb3") newRuns += 4;
-else if (result === "Nb4") newRuns += 5;
-else if (result === "Nb6") newRuns += 7;
+      else if (result === "Nb1") newRuns += 2;
+      else if (result === "Nb2") newRuns += 3;
+      else if (result === "Nb3") newRuns += 4;
+      else if (result === "Nb4") newRuns += 5;
+      else if (result === "Nb6") newRuns += 7;
 
-else if (result === "ro0") newWickets++;
+      else if (result === "ro0") newWickets++;
 
-else if (result === "ro1") {
-  newRuns += 1;
-  newWickets++;
-}
+      else if (result === "ro1") {
+        newRuns += 1;
+        newWickets++;
+      }
 
-else if (result === "ro2") {
-  newRuns += 2;
-  newWickets++;
-}
+      else if (result === "ro2") {
+        newRuns += 2;
+        newWickets++;
+      }
 
-else newRuns += Number(result);
+      else newRuns += Number(result);
       newOvers[editOver][editIndex] = result;
 
       setEditOver(null);
@@ -323,22 +323,22 @@ else newRuns += Number(result);
         newRuns += 2;
         newWickets++;
       }
-     else if (result === "Nb1") newRuns += 2;
-else if (result === "Nb2") newRuns += 3;
-else if (result === "Nb3") newRuns += 4;
-else if (result === "Nb4") newRuns += 5;
-else if (result === "Nb6") newRuns += 7;
+      else if (result === "Nb1") newRuns += 2;
+      else if (result === "Nb2") newRuns += 3;
+      else if (result === "Nb3") newRuns += 4;
+      else if (result === "Nb4") newRuns += 5;
+      else if (result === "Nb6") newRuns += 7;
       else newRuns += Number(result);
 
       let legalBalls = currentOver.filter(
-        b => (b !== "Wd" && b !== "Nb"  && b !== "Nb1"  && b !== "Nb2"  && b !== "Nb3"  && b !== "Nb4"  && b !== "Nb6")
+        b => (b !== "Wd" && b !== "Nb" && b !== "Nb1" && b !== "Nb2" && b !== "Nb3" && b !== "Nb4" && b !== "Nb6")
       ).length;
 
       if (legalBalls === 6) {
 
-       if (over + 1 < maxOvers) {
-    newOvers.push([]);
-  }
+        if (over + 1 < maxOvers) {
+          newOvers.push([]);
+        }
 
         if (team === "A") {
           setTeamA({
@@ -375,43 +375,43 @@ else if (result === "Nb6") newRuns += 7;
   const currentOver = overs[overs.length - 1] || [];
 
   const legalBalls = overs
-  .flat()
-  .filter(
-    b =>
-      b !== "Wd" &&
-      b !== "Nb" &&
-      b !== "Nb1" &&
-      b !== "Nb2" &&
-      b !== "Nb3" &&
-      b !== "Nb4" &&
-      b !== "Nb6"
-  ).length;
+    .flat()
+    .filter(
+      b =>
+        b !== "Wd" &&
+        b !== "Nb" &&
+        b !== "Nb1" &&
+        b !== "Nb2" &&
+        b !== "Nb3" &&
+        b !== "Nb4" &&
+        b !== "Nb6"
+    ).length;
 
   const over = Math.floor(legalBalls / 6);
 
- const ball = legalBalls % 6;
+  const ball = legalBalls % 6;
 
- useEffect(() => {
+  useEffect(() => {
 
-  if (wickets >= maxWickets && !allOut) {
+    if (wickets >= maxWickets && !allOut) {
 
-    setAllOut(true);
-    alert("All Out!");
+      setAllOut(true);
+      alert("All Out!");
 
-  }
+    }
 
-}, [wickets]);
+  }, [wickets]);
 
-useEffect(() => {
+  useEffect(() => {
 
-  if (over >= maxOvers && !oversFinished) {
+    if (over >= maxOvers && !oversFinished) {
 
-    setOversFinished(true);
-    alert("Overs Finished!");
+      setOversFinished(true);
+      alert("Overs Finished!");
 
-  }
+    }
 
-},  [over, maxOvers]);
+  }, [over, maxOvers]);
 
 
   function editBall(overIndex, ballIndex) {
@@ -437,19 +437,19 @@ useEffect(() => {
 
     if (confirm("Reset Match?")) {
 
-     setTeamA({
-  overs: [[]],
-  bowlers: [""],
-  runs: 0,
-  wickets: 0
-});
+      setTeamA({
+        overs: [[]],
+        bowlers: [""],
+        runs: 0,
+        wickets: 0
+      });
 
-setTeamB({
-  overs: [[]],
-  bowlers: [""],
-  runs: 0,
-  wickets: 0
-});
+      setTeamB({
+        overs: [[]],
+        bowlers: [""],
+        runs: 0,
+        wickets: 0
+      });
       setTeam("A");
 
       setAllOut(false);
@@ -472,7 +472,7 @@ setTeamB({
 
   return (
 
-   <div className="container">
+    <div className="container">
 
 
       <button
@@ -497,21 +497,39 @@ setTeamB({
 
         <div >
           Max Wickets :
-          <input style={{ width: "2rem", margin: "1rem" }}
+          <input
+            style={{ width: "2rem", margin: "1rem" }}
             type="number"
             min="1"
             value={maxWickets}
-            onChange={(e) => setMaxWickets(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+              setMaxWickets(val === "" ? "" : Number(val));
+            }}
+            onBlur={() => {
+              if (maxWickets === "" || maxWickets < 1) {
+                setMaxWickets(1);
+              }
+            }}
           />
         </div>
 
         <div>
           Max Overs :
-          <input style={{ width: "2rem", margin: "1rem" }}
+          <input
+            style={{ width: "2rem", margin: "1rem" }}
             type="number"
             min="1"
             value={maxOvers}
-            onChange={(e) => setMaxOvers(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+              setMaxOvers(val === "" ? "" : Number(val));
+            }}
+            onBlur={() => {
+              if (maxOvers === "" || maxOvers < 1) {
+                setMaxOvers(1);
+              }
+            }}
           />
         </div>
 
@@ -600,35 +618,35 @@ setTeamB({
 
           <div key={i}>
 
-          <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "12px",
-    marginTop: "20px",
-    
-    marginBottom: "10px",
-     border: "2px solid white",
-      borderRadius: "6px"
-  }}
->
-  <h3 style={{ margin: 0 }}>
-    Over {realOverIndex + 1} -
-  </h3>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px",
+                marginTop: "20px",
 
-  <input
-    style={{
-      width: "7rem",
-      padding: "5px",
-     
-    }}
-    type="text"
-    value={currentTeam.bowlers?.[realOverIndex] || ""}
-    placeholder="bowler name"
-    onChange={(e) => changeBowler(realOverIndex, e.target.value)}
-  />
-</div>
+                marginBottom: "10px",
+                border: "2px solid white",
+                borderRadius: "6px"
+              }}
+            >
+              <h3 style={{ margin: 0 }}>
+                Over {realOverIndex + 1} -
+              </h3>
+
+              <input
+                style={{
+                  width: "7rem",
+                  padding: "5px",
+
+                }}
+                type="text"
+                value={currentTeam.bowlers?.[realOverIndex] || ""}
+                placeholder="bowler name"
+                onChange={(e) => changeBowler(realOverIndex, e.target.value)}
+              />
+            </div>
             <div style={{
               display: "flex",
               gap: "10px",
