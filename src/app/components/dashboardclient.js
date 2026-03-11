@@ -274,19 +274,29 @@ else if (oldValue === "Nb6") newRuns -= 7;
 
       else newRuns -= Number(oldValue);
 
-      if (result === "W") newWickets++;
-      else if (result === "Wd" || result === "Nb") newRuns++;
-      else if (result === "ro0") newWickets++;
-      else if (result === "ro1") {
-        newRuns += 1;
-        newWickets++;
-      }
-      else if (result === "ro2") {
-        newRuns += 2;
-        newWickets++;
-      }
-      else newRuns += Number(result);
+     if (result === "W") newWickets++;
 
+else if (result === "Wd" || result === "Nb") newRuns++;
+
+else if (result === "Nb1") newRuns += 2;
+else if (result === "Nb2") newRuns += 3;
+else if (result === "Nb3") newRuns += 4;
+else if (result === "Nb4") newRuns += 5;
+else if (result === "Nb6") newRuns += 7;
+
+else if (result === "ro0") newWickets++;
+
+else if (result === "ro1") {
+  newRuns += 1;
+  newWickets++;
+}
+
+else if (result === "ro2") {
+  newRuns += 2;
+  newWickets++;
+}
+
+else newRuns += Number(result);
       newOvers[editOver][editIndex] = result;
 
       setEditOver(null);
@@ -590,15 +600,35 @@ setTeamB({
 
           <div key={i}>
 
-            <h3>Over {realOverIndex + 1}</h3>
-            <input
-              style={{ width: "6rem", margin: "1rem" }}
-              type="text"
-              value={currentTeam.bowlers?.[realOverIndex] || ""}
-              placeholder="bowler name"
-              onChange={(e) => changeBowler(realOverIndex, e.target.value)}
-            />
+          <div
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "12px",
+    marginTop: "20px",
+    
+    marginBottom: "10px",
+     border: "2px solid white",
+      borderRadius: "6px"
+  }}
+>
+  <h3 style={{ margin: 0 }}>
+    Over {realOverIndex + 1} -
+  </h3>
 
+  <input
+    style={{
+      width: "7rem",
+      padding: "5px",
+     
+    }}
+    type="text"
+    value={currentTeam.bowlers?.[realOverIndex] || ""}
+    placeholder="bowler name"
+    onChange={(e) => changeBowler(realOverIndex, e.target.value)}
+  />
+</div>
             <div style={{
               display: "flex",
               gap: "10px",
