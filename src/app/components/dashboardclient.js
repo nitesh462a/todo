@@ -393,7 +393,7 @@ export default function CricketScorer() {
 
   useEffect(() => {
 
-    if (wickets >= maxWickets && !allOut) {
+    if (maxWickets && wickets >= maxWickets && !allOut) {
 
       setAllOut(true);
       alert("All Out!");
@@ -404,7 +404,7 @@ export default function CricketScorer() {
 
   useEffect(() => {
 
-    if (over >= maxOvers && !oversFinished) {
+    if (maxOvers && over >= maxOvers && !oversFinished) {
 
       setOversFinished(true);
       alert("Overs Finished!");
